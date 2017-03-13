@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <meta name="dcterms.date" content="2017-03-12">
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="https://ickc.github.io/markdown-latex-css/css/common.css">
+  <link rel="stylesheet" href="https://ickc.github.io/markdown-latex-css/fonts/fonts.css">
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<nav id="TOC">
+<ul>
+<li><a href="#assignment-1-optimize-matrix-multiplication"><span class="toc-section-number">1</span> Assignment 1: Optimize Matrix Multiplication</a><ul>
+<li><a href="#problem-statement"><span class="toc-section-number">1.1</span> Problem statement</a></li>
+<li><a href="#remote-xsedemoodle-students-please-read"><span class="toc-section-number">1.2</span> Remote XSEDE/Moodle Students: Please Read</a></li>
+<li><a href="#instructions"><span class="toc-section-number">1.3</span> Instructions</a></li>
+<li><a href="#source-files"><span class="toc-section-number">1.4</span> Source Files</a></li>
+<li><a href="#getting-running"><span class="toc-section-number">1.5</span> Getting Running</a></li>
+<li><a href="#references"><span class="toc-section-number">1.6</span> References</a></li>
+</ul></li>
+</ul>
+</nav>
+<p><a href="https://sites.google.com/a/lbl.gov/cs267-spring-2017/home/homework1?tmpl=/system/app/templates/print/&amp;showPrintDialog=1" title="Permalink to Assignment 1: Optimize Matrix Multiplication">Source</a></p>
+<h1 id="assignment-1-optimize-matrix-multiplication"><span class="header-section-number">1</span> Assignment 1: Optimize Matrix Multiplication</h1>
+<h2 id="problem-statement"><span class="header-section-number">1.1</span> Problem statement</h2>
+<p>Your task is to optimize <a href="http://www.google.com/url?q=http%3A%2F%2Fen.wikipedia.org%2Fwiki%2FMatrix_multiplication&amp;sa=D&amp;sntz=1&amp;usg=AFQjCNF7P3ya4RJWT8a_cBRQhQhtHFLj8g">matrix multiplication</a> (matmul) code to run fast on a single processor core of <a href="http://www.google.com/url?q=http%3A%2F%2Fwww.nersc.gov%2Fusers%2Fcomputational-systems%2Fedison%2F&amp;sa=D&amp;sntz=1&amp;usg=AFQjCNEofn66_HYEJza5Ib-DUvj4CLA0MA">NERSC’s Edison</a> cluster.</p>
+<p>We consider a special case of matmul:</p>
+<p><em>C</em> := <em>C</em> + <em>A</em>*<em>B</em></p>
+<p>where <em>A</em>, <em>B</em>, and <em>C</em> are <em>n</em> x <em>n</em> matrices. This can be performed using 2_n_3 floating point operations (_n_3 adds, _n_3 multiplies), as in the following pseudocode:</p>
+<pre><code>  for i = 1 to n
+
+
+    for j = 1 to n
+
+
+      for k = 1 to n
+
+
+        C(i,j) = C(i,j) + A(i,k) * B(k,j)
+
+
+      end
+
+
+    end
+
+
+  end</code></pre>
+<h2 id="remote-xsedemoodle-students-please-read"><span class="header-section-number">1.2</span> Remote XSEDE/Moodle Students: Please Read</h2>
+<p>Dear Remote Students, we are thrilled to be a part of your parallel computing learning experience and to share these resources with you! To avoid confusion, please note that the assignment instructions, deadlines, and other assignment details posted here were designed for the local UC Berkeley students. You should check with your local instruction team about submission, deadlines, job-running details, etc. and utilize Moodle for questions. With that in mind, the problem statement, source code, and references should still help you get started (just beware of institution-specific instructions). Best of luck and we hope you enjoy the assignment!</p>
+<h2 id="instructions"><span class="header-section-number">1.3</span> Instructions</h2>
+<ul>
+<li>You will work in assigned teams (TBA) for this assignment.</li>
+<li>Your submission should be a gzipped tar archive, formatted (for Team 4) like: team04_hw1.tgz. It should contain:
+<ul>
+<li>dgemm-blocked.c, a C-language source file containing your implementation of the routine: void square_dgemm(int, double<em>, double</em>, double*);</li>
+<li>described in pseudocode above. We provide an example dgemm-blocked.c, below.</li>
+<li>Makefile, only if you modified it. If you modified it, make sure it still correctly builds the provided benchmark.c, which we will use to grade your submission.</li>
+<li>(e.g. for Team 4) team04_hw1.pdf, your write-up.</li>
+<li><strong>Please do use these formats and naming conventions.</strong> Not following these instructions leads to more busy work for the GSI’s, which makes the GSI’s sad…</li>
+</ul></li>
+<li><a href="http://www.google.com/url?q=http%3A%2F%2Fkb.iu.edu%2Fdata%2Facfi.html&amp;sa=D&amp;sntz=1&amp;usg=AFQjCNGG4xSgOGLH7zgAmIv_EPYedRbdJQ">This link</a> tells you how to use tar to make a .tgz file.</li>
+<li>Submit your .tgz through bCourses.</li>
+<li>Your write-up should contain:
+<ul>
+<li>the names of the people in your group (and each member’s contribution),</li>
+<li>the optimizations used or attempted,</li>
+<li>the results of those optimizations,</li>
+<li>the reason for any odd behavior (e.g., dips) in performance, and</li>
+<li>how the performance changed when running your optimized code on a <em>different</em> machine.</li>
+</ul></li>
+<li>For the last requirement, you may run your implementation on <a href="http://www.google.com/url?q=http%3A%2F%2Fwww.nersc.gov%2Fusers%2Fcomputational-systems%2F&amp;sa=D&amp;sntz=1&amp;usg=AFQjCNFpczBKfea_3UZRkBl9Gj-f39xLKw">another NERSC machine</a>, on your laptop/cellphone, etc.</li>
+<li>Please carefully read the notes for implementation details. Stay tuned to <a href="https://www.google.com/url?q=https%3A%2F%2Fpiazza.com%2Fberkeley%2Fspring2017%2Fcs267%2Fhome&amp;sa=D&amp;sntz=1&amp;usg=AFQjCNGgn8LIfjCRCK7tDZhYAf4fiOWKFg">Piazza</a> (<a href="https://www.google.com/url?q=https%3A%2F%2Fpiazza.com%2Fberkeley%2Fspring2016%2Fcs267&amp;sa=D&amp;sntz=1&amp;usg=AFQjCNHBwSYeAdgW5aLhTv4fR_OI3DG8wA">signup</a>) for updates and clarifications, as well as discussion.</li>
+<li>If you are new to optimizing numerical codes, we recommend reading the papers in the references section.</li>
+</ul>
+<h3 id="notes"><span class="header-section-number">1.3.1</span> Notes:</h3>
+<ul>
+<li>Your grade will mostly depend on two factors:
+<ul>
+<li>performance sustained by your codes on Edison,</li>
+<li>explanations of the performance features you observed (including what didn’t work)</li>
+</ul></li>
+<li>There are other formulations of matmul (e.g., <a href="http://www.google.com/url?q=http%3A%2F%2Fen.wikipedia.org%2Fwiki%2FStrassen_algorithm&amp;sa=D&amp;sntz=1&amp;usg=AFQjCNHnZS7hPd_keDRJqilM_VuzvNLlOQ">Strassen</a>) that are mathematically equivalent, but perform asymptotically fewer computations - we will not grade submissions that do fewer computations than the two _n _cubed algorithm. This is actually an optional part of HW1.</li>
+<li>Your code must use <a href="http://www.google.com/url?q=http%3A%2F%2Fen.wikipedia.org%2Fwiki%2FDouble-precision_floating-point_format&amp;sa=D&amp;sntz=1&amp;usg=AFQjCNHW3ExAuxbFdmsFQjZI0yxdmvJ2Ig">double-precision</a> to represent real numbers. A common reference for double-precision matrix multiplication is the <a href="http://www.google.com/url?q=http%3A%2F%2Fwww.netlib.org%2Fblas%2Fdgemm.f&amp;sa=D&amp;sntz=1&amp;usg=AFQjCNF55_TvoFch3H7sc14RC4Sspp1yag">dgemm</a> (double-precision general matrix-matrix multiply) routine in the level-3 <a href="http://www.google.com/url?q=http%3A%2F%2Fnetlib.org%2Fblas%2Findex.html&amp;sa=D&amp;sntz=1&amp;usg=AFQjCNH8LcjkYZmN7pVINDPLy9qNWbl4zg">BLAS</a>. We will compare your implementation with the tuned dgemm implementation in the vendor-provided BLAS library - on Edison (Cray XC30), we will compare with the Cray LibSci implementation of dgemm. Note that dgemm has a more general interface than square_dgemm - an optional part of HW1 encourages you to explore this richer tuning space.</li>
+<li>You may use <a href="http://www.google.com/url?q=http%3A%2F%2Fwww.nersc.gov%2Fusers%2Fsoftware%2Fcompilers%2F&amp;sa=D&amp;sntz=1&amp;usg=AFQjCNGLnwCqKY9K8aNPj-9_URHOTzkUZQ">any compiler available</a>. We recommend starting with the GNU C compiler (gcc). If you use a compiler other than gcc, you will have to change the provided Makefile, which uses gcc-specific flags. Note that the default compilers, every time you open a new terminal, are PGI - you will have to type “module swap PrgEnv-pgi PrgEnv-gnu” to switch to, eg, GNU compilers. You can type “module list” to see which compiler wrapper you have loaded.</li>
+<li>Besides compiler intrinsic functions and built-ins, your code (dgemm-blocked.c) must only call into the C standard library.</li>
+<li>You may not use compiler flags that automatically detect dgemm kernels and replace them with BLAS calls, i.e. Intel’s <a href="http://www.google.com/url?q=http%3A%2F%2Fsoftware.intel.com%2Fsites%2Fproducts%2Fdocumentation%2Fhpc%2Fcomposerxe%2Fen-us%2F2011Update%2Ffortran%2Fwin%2Fcopts%2Fcommon_options%2Foption_opt_matmul.htm&amp;sa=D&amp;sntz=1&amp;usg=AFQjCNFnGmJtz7xFqbFOK7G_gwbPtncOXQ">-matmul</a> flag.</li>
+<li>You should try to use your compiler’s automatic vectorizer before manually vectorizing.
+<ul>
+<li>GNU C provides <a href="http://www.google.com/url?q=http%3A%2F%2Fgcc.gnu.org%2Fonlinedocs%2Fgcc%2FC-Extensions.html&amp;sa=D&amp;sntz=1&amp;usg=AFQjCNFTuXG1DC_s0Bo6GJNgduA6AVKIyw">many</a> extensions, which include intrinsics for vector (SIMD) instructions and data alignment. (Other compilers may have different interfaces.)</li>
+<li>Ideally your compiler injects the appropriate intrinsics into your code automatically (eg, automatic vectorization and/or automatic data alignment). <a href="http://www.google.com/url?q=http%3A%2F%2Fgcc.gnu.org%2Fprojects%2Ftree-ssa%2Fvectorization.html&amp;sa=D&amp;sntz=1&amp;usg=AFQjCNFfihLxGT75s7zqaJ0lrt-QM7GsUg">gcc’s auto-vectorizer</a> reports diagnostics that may help you identify if manual vectorization is required.</li>
+<li>To manually vectorize, you must add compiler intrinsics to your code.</li>
+<li>Consult your compiler’s documentation.</li>
+</ul></li>
+<li>You may assume that A and B do not alias C; however, A and B may alias each other. It is semantically correct to qualify C (the last argument to square_dgemm) with the C99 restrict keyword. There is a lot online about restrict and pointer-aliasing - <a href="http://www.google.com/url?q=http%3A%2F%2Fcellperformance.beyond3d.com%2Farticles%2F2006%2F05%2Fdemystifying-the-restrict-keyword.html&amp;sa=D&amp;sntz=1&amp;usg=AFQjCNGTYyQUZZowLWc4Uh-lGqPH3DUJJw">this</a> is a good article to start with.</li>
+<li>The matrices are all stored in <a href="http://www.google.com/url?q=http%3A%2F%2Fen.wikipedia.org%2Fwiki%2FRow-major_order&amp;sa=D&amp;sntz=1&amp;usg=AFQjCNEwA_zeB5feZYAGG-LiZRk4yYWKDQ">column-major order</a>, i.e. <em>Ci,j</em> == C(i,j) == C[(i-1)+(j-1)*n], for i=1:n, where n is the number of rows in C. Note that we use 1-based indexing when using mathematical symbols and MATLAB index notation (parentheses), and 0-based indexing when using C index notation (square brackets).</li>
+<li>We will check correctness by the following componentwise error bound: |square_dgemm(n,A,B,0) - A<em>B| &lt; eps</em>n<em>|A|</em>|B|.</li>
+<li>where eps := 2-52 = 2.2 * 10-16 is the <a href="http://www.google.com/url?q=http%3A%2F%2Fen.wikipedia.org%2Fwiki%2FMachine_epsilon&amp;sa=D&amp;sntz=1&amp;usg=AFQjCNHv1pzh_w99W-9rnsCMKx-x0C9bdQ">machine epsilon</a>.</li>
+<li>The <a href="http://www.google.com/url?q=http%3A%2F%2Fwww.nersc.gov%2Fusers%2Fcomputational-systems%2Fedison%2Fconfiguration%2F&amp;sa=D&amp;sntz=1&amp;usg=AFQjCNF2VCGxuccbHChss-ip_icRwPzUzw">target processor</a> is a 12-core Intel Ivy Bridge running at 2.4 GHz, yielding 4 double-precision (ie, 64-bit) flops per pipeline * 2 pipelines * 2.4 GHz = 19.2 Gflops/s.</li>
+</ul>
+<figure>
+<img src="media/mm_cs267.png" />
+</figure>
+<h3 id="optional"><span class="header-section-number">1.3.2</span> Optional:</h3>
+<p>These parts are not graded. You should be satisfied with your square_dgemm results and write-up before beginning an optional part.</p>
+<ul>
+<li>Implement Strassen matmul. Consider switching over to the three-nested-loops algorithm when the recursive subproblems are small enough.</li>
+<li>Support the dgemm interface (ie, rectangular matrices, transposing, scalar multiples).</li>
+<li>Try float (single-precision). This means you can use 8-way SIMD parallelism on Edison.</li>
+<li>Try complex numbers (single- and double-precision) - note that complex numbers are part of C99 and <a href="http://www.google.com/url?q=http%3A%2F%2Fgcc.gnu.org%2Fonlinedocs%2Fgcc%2FComplex.html&amp;sa=D&amp;sntz=1&amp;usg=AFQjCNEuK_RzagaRPIhs5_oaLVzjxcyzUg">supported in gcc</a>. <a href="http://www.google.com/url?q=http%3A%2F%2Fstackoverflow.com%2Fquestions%2F3211346%2Fcomplex-mul-and-div-using-sse-instructions&amp;sa=D&amp;sntz=1&amp;usg=AFQjCNFlVz3VkBTwoDXWqQN5RtVLzz1h7Q">This forum thread</a> gives advice on vectorizing complex multiplication with the conventional approach - but note that there are <a href="http://www.google.com/url?q=http%3A%2F%2Fen.wikipedia.org%2Fwiki%2FMultiplication_algorithm%23Gauss.27s_complex_multiplication_algorithm&amp;sa=D&amp;sntz=1&amp;usg=AFQjCNGxM1aGMfdzDlu_DuDBpQH0Es2GzA">other algorithms</a> for this operation.</li>
+<li>Optimize your matmul for the case when the inputs are symmetric. Consider <a href="http://www.google.com/url?q=http%3A%2F%2Fwww.netlib.org%2Flapack%2Flug%2Fnode122.html&amp;sa=D&amp;sntz=1&amp;usg=AFQjCNGV9G9tzNpn3DqC3whVIPjPhZR4fA">conventional</a> and <a href="http://www.google.com/url?q=http%3A%2F%2Fwww.netlib.org%2Flapack%2Flug%2Fnode123.html&amp;sa=D&amp;sntz=1&amp;usg=AFQjCNGkU-RXjyZKWpnxmQZihGfjkB3_cg">packed</a> symmetric storage.</li>
+<li>Try optimizing matrix multiply for the <a href="http://www.nersc.gov/users/computational-systems/cori/cori-intel-xeon-phi-nodes/">Cori Intel Xeon Phi Nodes</a> (the newest addition to NERSC). The difference in architectures may make it very interesting for you. You will need to write your own job scripts etc. A good place to start is the <a href="http://www.nersc.gov/users/computational-systems/cori/getting-started/">Getting Started page</a>. To add some incentive, <strong>we are offering extra credit for this optional part this year.</strong></li>
+</ul>
+<h2 id="source-files"><span class="header-section-number">1.4</span> Source Files</h2>
+<p>We provide two simple implementations for you to start with: a naive three-loop implementation similar to the pseudocode above, and a more cache-efficient blocked implementation.</p>
+<p>The necessary files are in <a href="https://www.google.com/url?q=https%3A%2F%2Fpeople.eecs.berkeley.edu%2F~qijing.huang%2Fcs267_2017%2Fhw1%2Fcs267_hw1_2017.tar&amp;sa=D&amp;sntz=1&amp;usg=AFQjCNGUNrUH_0vYsG6ApO5-ToqnYv44Gw">cs267_hw1_2017.tar</a> posted for local students on bCourses. (Remote students, please check with your instructors and instruction site.) Included in the tar are the following:</p>
+<p>dgemm-naive.c</p>
+<p>A naive implementation of matrix multiply using three nested loops,</p>
+<p>dgemm-blocked.c</p>
+<p>A simple blocked implementation of matrix multiply,</p>
+<p>dgemm-blas.c</p>
+<p>A wrapper for the vendor’s optimized BLAS implementation of matrix multiply (default: Cray LibSci),</p>
+<p>benchmark.c</p>
+<p>The driver program that measures the runtime and verifies the correctness by comparing with the vendor’s implementation,</p>
+<p>Makefile</p>
+<p>A simple makefile to build the executables,</p>
+<p>job-blas, job-blocked, job-naive</p>
+<p><em><strong>Example</strong></em> scripts*** **to run the executables on Edison compute nodes. For example, you can type “sbatch job-blas” to benchmark the BLAS version.</p>
+<p>The documentation for Edison’s programming environment can be found below.</p>
+<h3 id="documentation"><span class="header-section-number">1.4.1</span> Documentation:</h3>
+<p>You are also welcome to learn from the source code of state-of-art BLAS implementations such as <a href="http://www.google.com/url?q=http%3A%2F%2Fwww.tacc.utexas.edu%2Ftacc-projects%2Fgotoblas2&amp;sa=D&amp;sntz=1&amp;usg=AFQjCNHVWHR0sUbhsWS83J0UwyW5Ut7o7w">GotoBLAS</a> and <a href="http://www.google.com/url?q=http%3A%2F%2Fmath-atlas.sourceforge.net%2F&amp;sa=D&amp;sntz=1&amp;usg=AFQjCNG0a6Gljk-YMhGkgnGpvKB3SxJcuQ">ATLAS</a>. However, you should not reuse those codes in your submission.</p>
+<h2 id="getting-running"><span class="header-section-number">1.5</span> Getting Running</h2>
+<p>Edison works with a batch submission system. Most of you have probably never worked with such a system, so welcome to the wonderful new world. The code you download should work out of the box. Below is an example of how you use batch submission. However, the NERSC documentation is great and is your friend. Once you work through this example, we strongly recommend you get more detail from NERSC. They have a nice example of <a href="http://www.google.com/url?q=http%3A%2F%2Fwww.nersc.gov%2Fusers%2Fcomputational-systems%2Fedison%2Fgetting-started%2Fyour-first-program%2F&amp;sa=D&amp;sntz=1&amp;usg=AFQjCNGoU6m0S6j2tnZ_VanwO_-SjvXtKg">submitting your first job</a> that you should also work through. Details on how to modify the batch scripts can be found <a href="http://www.google.com/url?q=http%3A%2F%2Fwww.nersc.gov%2Fusers%2Fcomputational-systems%2Fedison%2Frunning-jobs%2Fbatch-jobs%2F&amp;sa=D&amp;sntz=1&amp;usg=AFQjCNGWdXnFyD1MqSOJnxEqs4py2CPJTw">here</a>.</p>
+<ul>
+<li>SSH into edison and “wget” the above tarball of source code into some directory. “cd” into that directory and untar the source.</li>
+</ul>
+<p><code>``    ``ssh -l  edison.nersc.gov</code><br />
+<code>wget --no-check-certificate https://people.eecs.berkeley.edu/~qijing.huang/cs267_2017/hw1/cs267_hw1_2017.tar</code><br />
+<code>tar xvf cs267_hw1_2017.tar</code></p>
+<ul>
+<li>Compile the code with the makefile that we give you by typing “make” in the directory. This yields binaries that the computer can execute.</li>
+<li>Note that because we are writing sequential code for this assignment, the code will run on the login nodes (the node that you ssh into). You can run the naive code by typing “./benchmark-naive”. Note that while this is feasible, running code on the login nodes is highly frowned upon and if you abuse it NERSC will get in touch with you. We also will not test your code on the login nodes, so you want to be benchmarking things on the compute nodes.</li>
+<li>To submit a job to be processed on the compute nodes, you need to submit a batch job script. These are easy to write, but we gave you one anyway *****, because we like you. To submit your job, you must choose a queue. There is more information online, but we’ll test your code on the regular queue and you can debug in the debug queue. We chose the debug queue for you in the batch job script we give you, but use the regular queue to get real data for your final report. Submit the job-naive file with “sbatch job-blas”. This will spit out something like “Submitted batch job JOBID” where JOBID is the id of your job.</li>
+<li>You can check on how your job is doing by querying the system with “squeue -u MYUSERNAME”. That will spit out some status while you impatiently wait for your job to finish (it’s so exciting!).</li>
+<li>When your job finishes running on a compute node, it will write an output (standard out) file and a error file (standard error). It’s all very cool</li>
+<li>Note - lots of scientists all over are using the computers, so don’t do bad things like run lots of code on the login nodes or query squeue constantly. This slows things down for other people and NERSC will get mad at you, which will make it hard for you to do your homework.</li>
+<li>Finally, please bring questions to office hours! We want you spending time on learning how to optimize code and understand the hardware.</li>
+</ul>
+<h3 id="important"><span class="header-section-number">1.5.1</span> Important:</h3>
+<p>This documentation has been updated to reflect recent changes in the NERSC batching system. We have done our best to update all references, but beware artifacts may exist in outside sources and even these documents. Specifically, if you come across “qsub” instructions in NERSC-related resources, follow instead the “sbatch” instructions current on the NERSC site. If you are confused, please email us or stop by our office hours.</p>
+<p>***** We emphasize these are example scripts because for these as well as all other assignment scripts we provide, you may need to adjust the number of requested nodes and cores and amount of time according to your needs (your allocation and the total class allocation is limited). To understand how you are charged, <a href="http://www.google.com/url?q=http%3A%2F%2Fwww.nersc.gov%2Fusers%2Faccounts%2Fuser-accounts%2Fhow-usage-is-charged%2F&amp;sa=D&amp;sntz=1&amp;usg=AFQjCNET3VLJ7VzGbeh-wEm7c4XEHirjxA">READ THIS</a> alongside the given scripts. For testing (1) try running and debugging on your laptop first, (2) try running with the minimum resources you need for testing and debugging, (3) once your code is fully debugged, use the amount of resources you need to collect the final results for the assignment. This will become more important for later assignments, but it is good to get in the habit now.</p>
+<h2 id="references"><span class="header-section-number">1.6</span> References</h2>
+<ul>
+<li>Goto, K., and van de Geijn, R. A. 2008. Anatomy of High-Performance Matrix Multiplication, <em>ACM Transactions on Mathematical Software 34</em>, 3, Article 12.</li>
+<li>(Note: explains the design decisions for the GotoBLAS dgemm implementation, which also apply to your code.)</li>
+<li>Chellappa, S., Franchetti, F., and PÃƒÂ¼schel, M. 2008. <a href="http://www.google.com/url?q=http%3A%2F%2Fspiral.ece.cmu.edu%3A8080%2Fpub-spiral%2Fabstract.jsp%3Fid%3D100&amp;sa=D&amp;sntz=1&amp;usg=AFQjCNF78ztoHz6K4vBo4yTSfg4G5-wEcg">How To Write Fast Numerical Code: A Small Introduction</a>, <em>Lecture Notes in Computer Science 5235</em>, 196-259.</li>
+<li>(Note: how to write C code for modern compilers and memory hierarchies, so that it runs fast. Recommended reading, especially for newcomers to code optimization.)</li>
+<li>Bilmes, <em>et al.</em> <a href="http://www.google.com/url?q=http%3A%2F%2Fwww.icsi.berkeley.edu%2F~bilmes%2Fphipac%2F&amp;sa=D&amp;sntz=1&amp;usg=AFQjCNEHDeCYWhbZF_cpADrkJ5NatuPJaw">The PHiPAC (Portable High Performance ANSI C) Page for BLAS3 Compatible Fast Matrix Matrix Multiply</a>.</li>
+<li>(Note: PHiPAC is a code-generating autotuner for matmul that started as a submission for this HW in a previous semester of CS267. Also see <a href="http://www.google.com/url?q=http%3A%2F%2Fmath-atlas.sourceforge.net%2F&amp;sa=D&amp;sntz=1&amp;usg=AFQjCNG0a6Gljk-YMhGkgnGpvKB3SxJcuQ">ATLAS</a>; both are good examples if you are considering code generation strategies.)</li>
+<li>Lam, M. S., Rothberg, E. E, and Wolf, M. E. 1991. The Cache Performance and Optimization of Blocked Algorithms, <em>ASPLOS’91</em>, 63-74.</li>
+<li>(Note: clearly explains cache blocking, supported by with performance models.)</li>
+<li>Hints for HW1 and SIMD example pptx and pdf</li>
+</ul>
+<p>|</p>
+</body>
+</html>
