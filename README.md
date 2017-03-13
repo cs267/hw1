@@ -186,7 +186,7 @@ This documentation has been updated to reflect recent changes in the NERSC batch
 [16]: http://www.google.com/url?q=http%3A%2F%2Fen.wikipedia.org%2Fwiki%2FRow-major_order&sa=D&sntz=1&usg=AFQjCNEwA_zeB5feZYAGG-LiZRk4yYWKDQ
 [17]: http://www.google.com/url?q=http%3A%2F%2Fen.wikipedia.org%2Fwiki%2FMachine_epsilon&sa=D&sntz=1&usg=AFQjCNHv1pzh_w99W-9rnsCMKx-x0C9bdQ
 [18]: http://www.google.com/url?q=http%3A%2F%2Fwww.nersc.gov%2Fusers%2Fcomputational-systems%2Fedison%2Fconfiguration%2F&sa=D&sntz=1&usg=AFQjCNF2VCGxuccbHChss-ip_icRwPzUzw
-[19]: https://ce8b96b5-a-46f4763e-s-sites.googlegroups.com/a/lbl.gov/cs267-spring-2017/home/homework1/mm_cs267.png?attachauth=ANoY7cqN4J3DcnJM92NINtcq6lQ4Rn7NnFZfu8AaokwQzktF40WQ_m290ZQqqzsOzSmCt9L_-X0Tvo-okuLBbYSAH293V-CP84In-04WWLCHlvI-TYKOWKaJnPsvgYkG599Qba2xHNY6EUb3aPdURyZ8buUv5rAdpFPQipowGx4UUUgh1hY_lNhoNV4o224PwY1AWvURij0kQ5Dp3JNrDPQR97c0VFrKn9FPqUrV_rmAiCdnBa12mq4%3D&attredirects=0
+[19]: media/mm_cs267.png
 [20]: http://www.google.com/url?q=http%3A%2F%2Fgcc.gnu.org%2Fonlinedocs%2Fgcc%2FComplex.html&sa=D&sntz=1&usg=AFQjCNEuK_RzagaRPIhs5_oaLVzjxcyzUg
 [21]: http://www.google.com/url?q=http%3A%2F%2Fstackoverflow.com%2Fquestions%2F3211346%2Fcomplex-mul-and-div-using-sse-instructions&sa=D&sntz=1&usg=AFQjCNFlVz3VkBTwoDXWqQN5RtVLzz1h7Q
 [22]: http://www.google.com/url?q=http%3A%2F%2Fen.wikipedia.org%2Fwiki%2FMultiplication_algorithm%23Gauss.27s_complex_multiplication_algorithm&sa=D&sntz=1&usg=AFQjCNGxM1aGMfdzDlu_DuDBpQH0Es2GzA
